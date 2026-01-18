@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Space Shooter - Leaderboard</title>
+    <link rel="stylesheet" href="style1.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="game-container">
+        <div id="ui-layer">
+            <div id="score">Punti: 0</div>
+            <div id="level">Livello: 1</div>
+        </div>
+        
+        <div id="game-over-screen" class="hidden">
+            <h1 id="end-title">GAME OVER</h1>
+            <p class="final-score-text">Punteggio finale: <span id="final-score-val">0</span></p>
+            
+            <div id="input-section" class="hidden">
+                <p style="color: yellow;">Nuovo Record! Entri in Top 10!</p>
+                <input type="text" id="player-name" maxlength="8" placeholder="Tuo Nome (Max 8)" />
+                <button id="btn-save" onclick="salvaPunteggio()">Salva in Classifica</button>
+            </div>
+
+            <div id="leaderboard-container">
+                <h3>🏆 TOP 10 GIOCATORI 🏆</h3>
+                <ul id="leaderboard-list">
+                    <li>Caricamento...</li>
+                </ul>
+            </div>
+
+            <button id="btn-retry" onclick="riavviaGioco()">🔄 RIPROVA</button>
+        </div>
+    </div>
+
+    <script src="script1.js"></script>
+</body>
+</html>
