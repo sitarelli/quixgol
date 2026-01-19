@@ -1,4 +1,4 @@
-/* script.js - v2.9: DARK PREVIEW BACKGROUND */
+/* script.js - v3.0: SAFARI FIX (BLACK BG + GHOST IMAGE) */
 
 // 1. SUPABASE
 const SUPABASE_URL = 'https://rhttiiwsouqnlwoqpcvb.supabase.co';
@@ -17,7 +17,7 @@ const MAX_TIME_BONUS = 500;
 const POINTS_PER_FILL = 10;     
 
 // Configurazione ZOOM Mobile
-const MOBILE_ZOOM_LEVEL = 1.15; // Modifica questo per più zoom (es. 1.30, 1.50)
+const MOBILE_ZOOM_LEVEL = 1.15; 
 const MOBILE_BREAKPOINT = 768;
 
 const CELL_UNCLAIMED = 0; const CELL_CLAIMED = 1; const CELL_STIX = 2;
@@ -142,24 +142,41 @@ if(musicBtn) {
     });
 }
 
-// --- GRAFICA STATIC LAYERS (SFONDO SCURO) ---
+// --- GRAFICA STATIC LAYERS (FIX DEFINITIVO PER SAFARI) ---
 function redrawStaticLayers() {
     if (!currentBgImage) return;
     
-    // 1. Disegna l'immagine FULL COLOR sul canvas di base
+    // 1. Disegna l'immagine FULL COLOR sul canvas di base (sotto)
     imgCtx.drawImage(currentBgImage, 0, 0, imageCanvas.width, imageCanvas.height);
 
-    // 2. Prepara il GRID CANVAS (il livello "nebbia")
+    // 2. Prepara il GRID CANVAS (il livello "copertura")
+    // Pulisci tutto
     gridCtx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
     
-    // MODIFICA: Invece di riempire di nero, disegniamo l'immagine SCURA
     gridCtx.save();
-    // Filtro magico: Scala di grigi 100% e Luminosità bassissima (20%)
-    gridCtx.filter = 'grayscale(100%) brightness(9%)'; 
+    
+    // *** FIX SAFARI ***
+    // Invece di disegnare l'immagine e provare a scurirla (che Safari sbaglia),
+    // disegniamo prima il NERO, e poi l'immagine "fantasmino" sopra.
+    
+    // A. Riempi di NERO SOLIDO (questo copre sicuramente)
+    gridCtx.fillStyle = '#000000';
+    gridCtx.fillRect(0, 0, gridCanvas.width, gridCanvas.height);
+    
+    // B. Disegna l'immagine con BASSISSIMA opacità (effetto vedo-non-vedo)
+    gridCtx.globalAlpha = 0.08; // Visibile al 8% (molto scura)
+    // Se vuoi bianco e nero, decommenta la riga sotto (ma filter a volte è buggato su vecchi iOS)
+    // gridCtx.filter = 'grayscale(100%)'; 
     gridCtx.drawImage(currentBgImage, 0, 0, gridCanvas.width, gridCanvas.height);
+    
+    // C. Ripristina opacità normale
+    gridCtx.globalAlpha = 1.0;
+    gridCtx.filter = 'none';
+    
     gridCtx.restore();
 
-    // 3. "Buca" la nebbia scura dove abbiamo già conquistato
+    // 3. "Buca" la copertura dove abbiamo conquistato
+    // Usiamo destination-out che 'cancella' il nero e mostra l'immagine sotto (imgCtx)
     let rectSizeX = Math.ceil(scaleX);
     let rectSizeY = Math.ceil(scaleY);
 
@@ -173,6 +190,8 @@ function redrawStaticLayers() {
         }
     }
     gridCtx.fill();
+    
+    // Ripristina modalità disegno normale
     gridCtx.globalCompositeOperation = 'source-over'; 
 }
 
@@ -219,24 +238,18 @@ function initGame(lvl, resetLives = true){
     if(gameOverScreen) gameOverScreen.classList.add('hidden');
     level = lvl;
 
-
-    // --- NUOVA LOGICA CAMBIO MUSICA ---
+    // --- LOGICA CAMBIO MUSICA ---
     if (bgMusic) {
-        // Definiamo quale file deve suonare
         let nuovaMusica = (level >= 5) ? 'part2.mp3' : 'soundtrack.mp3';
-        
-        // Cambiamo src solo se è diverso da quello attuale per non far ripartire la musica da zero inutilmente
         if (!bgMusic.src.includes(nuovaMusica)) {
             bgMusic.src = nuovaMusica;
-            bgMusic.load(); // Carica il nuovo file
+            bgMusic.load(); 
             if (isMusicOn) {
                 bgMusic.play().catch(e => console.log("Errore riproduzione musica:", e));
             }
         }
     }
     // ----------------------------------
-
-   
 
     if (resetLives) { 
         lives = START_LIVES; 
@@ -555,8 +568,7 @@ function resetAfterDeath(){
             }
         }
         
-        // MODIFICA: Invece di disegnare rettangoli neri, ridisegniamo l'intero livello statico
-        // Questo ripristina la "nebbia scura" sulle linee stix perse
+        // MODIFICA: Ridisegniamo l'intero livello statico
         redrawStaticLayers();
         
         flashList = [];
