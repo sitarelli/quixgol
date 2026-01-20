@@ -697,6 +697,7 @@ function resetAfterDeath(){
             });
         }
         
+
         evilPlayers = [];
         let numEvilBalls = 0;
         if (level === 9) numEvilBalls = 1;
@@ -723,6 +724,59 @@ function resetAfterDeath(){
         flashList = [];
     }
 }
+
+
+
+
+
+
+// AGGIUNGI QUESTA FUNZIONE CHE MANCAVA
+function drawVictory() {
+    entCtx.save();
+    entCtx.clearRect(0, 0, entityCanvas.width, entityCanvas.height);
+    
+    // Sfondo scuro semitrasparente per risaltare il testo
+    entCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    entCtx.fillRect(0, 0, entityCanvas.width, entityCanvas.height);
+
+    // Scritta "YOU WIN" o "MISSION COMPLETE"
+    let fontSize = Math.floor(Math.min(entityCanvas.width, entityCanvas.height) / 5);
+    entCtx.font = `bold ${fontSize}px 'Orbitron', sans-serif`;
+    entCtx.textAlign = 'center';
+    entCtx.textBaseline = 'middle';
+    
+    // Effetto Neon
+    entCtx.fillStyle = '#00ff00';
+    entCtx.shadowColor = '#ffffff';
+    entCtx.shadowBlur = 30;
+    
+    entCtx.fillText("VICTORY!", entityCanvas.width / 2, entityCanvas.height / 2);
+    entCtx.restore();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function moveQix(){
     for (let q of qixList) {
@@ -829,12 +883,12 @@ async function gestisciFinePartita(vittoria) {
 async function checkAndShowLeaderboard() {
     leaderboardList.innerHTML = "<li>Caricamento dati...</li>"; inputSection.classList.add('hidden'); 
     
-    if (cheatDetected) {
-        leaderboardList.innerHTML = "<li>Punteggio non valido per la classifica (Cheat).</li>";
-        let { data: classifica } = await dbClient.from('classifica').select('*').order('punteggio', { ascending: false }).limit(10);
-        disegnaLista(classifica);
-        return; 
-    }
+   // if (cheatDetected) {
+     //   leaderboardList.innerHTML = "<li>Punteggio non valido per la classifica (Cheat).</li>";
+     //   let { data: classifica } = await dbClient.from('classifica').select('*').order('punteggio', { ascending: false }).limit(10);
+      //  disegnaLista(classifica);
+     //   return; 
+   // }
 
     let { data: classifica, error } = await dbClient.from('classifica').select('*').order('punteggio', { ascending: false }).limit(10);
     
@@ -861,7 +915,7 @@ function disegnaLista(data) {
 }
 
 window.salvaPunteggio = async function() {
-    if (cheatDetected) { alert("Non puoi salvare il punteggio usando i trucchi!"); return; }
+ //   if (cheatDetected) { alert("Non puoi salvare il punteggio usando i trucchi!"); return; }
 
     const nome = playerNameInput.value.trim();
     if (nome.length === 0 || nome.length > 8) { alert("Inserisci un nome valido (1-8 caratteri)"); return; }
