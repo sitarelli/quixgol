@@ -4,8 +4,24 @@
     --bg: #050510;
 }
 
+
+
 body {
-    background-color: var(--bg);
+    background-color: var(--bg); /* Colore di base scuro di fallback */
+    
+    /* Inserisci qui il nome del tuo file */
+    background-image: url('pattern.png'); 
+    
+    /* Fa sì che l'immagine si ripeta all'infinito */
+    background-repeat: repeat; 
+    
+    /* Mantiene lo sfondo fisso mentre la pagina/game si muove (opzionale) */
+    background-attachment: fixed; 
+    
+    /* Se il pattern ti sembra troppo grande o troppo piccolo, 
+       puoi regolarlo con questa riga (es. 100px, 200px o auto) */
+    background-size: 150px; 
+
     color: white;
     font-family: 'Orbitron', sans-serif;
     margin: 0;
@@ -19,6 +35,7 @@ body {
     touch-action: none;
     user-select: none;
 }
+
 
 /* CONTENITORE PRINCIPALE */
 #main-layout {
@@ -201,7 +218,7 @@ canvas {
     color: var(--bg);
     border: 2px solid white;
     padding: 15px 30px;
-    font-size: 20px;
+    font-size: 15px;
     font-family: 'Orbitron', sans-serif;
     font-weight: bold;
     border-radius: 50px;
