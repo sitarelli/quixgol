@@ -93,7 +93,7 @@ let evilPlayers = [];
 let cheatBuffer = "";
 let isGodMode = false;
 let cheatDetected = false; 
-let playerSpeedMult = 1.0; 
+let playerSpeedMult = 1; 
 let moveAccumulator = 0;   
 
 // Contexts
@@ -262,7 +262,7 @@ function initGame(lvl, resetLives = true){
         cheatDetected = false; 
     }
     
-    playerSpeedMult = 1.0;
+    playerSpeedMult = 1.8;
     moveAccumulator = 0;
 
     levelStartTime = Date.now();
