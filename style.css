@@ -89,12 +89,12 @@ body {
 
 /* --- RIGA CENTRALE --- */
 #game-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
+        flex-wrap: wrap; 
+        width: 100%;
+        justify-content: center; /* Centra perfettamente il gioco */
+        padding: 0; /* Rimuove lo spazio extra che causava lo sbordamento a destra */
+        box-sizing: border-box;
+    }
 
 .side-col {
     width: 100px;
@@ -497,12 +497,14 @@ canvas {
 
 .dpad-row { display: flex; gap: 5px; }
 
+
+
 .dpad-btn {
-    width: 60px; height: 60px;
+    width: 75px; height: 75px; /* Aumentato da 60px */
     background: rgba(0, 20, 40, 0.9);
     border: 2px solid var(--primary);
     color: var(--primary);
-    font-size: 24px;
+    font-size: 32px; /* Freccia più visibile */
     border-radius: 10px;
     cursor: pointer;
     touch-action: manipulation; /* Risposta rapida al tocco */
@@ -512,10 +514,17 @@ canvas {
 
 /* REGOLE SPECIFICHE MOBILE */
 @media (max-width: 768px) {
-    #mobile-controls { display: flex; } /* Appare solo qui */
     
-    .center-col {
-        justify-content: flex-start !important; /* Spinge tutto in alto */
-        padding-top: 10px;
+
+
+#mobile-controls { 
+        display: flex;
+        order: 5; /* Spinge i controlli in fondo, sotto stats e mute */
+        width: 100%; /* Occupa tutta la larghezza per non affiancarsi a nulla */
+        margin-bottom: 20px; /* Un po' di aria dal fondo */
     }
+
+
+
+
 }
