@@ -93,7 +93,7 @@ let evilPlayers = [];
 let cheatBuffer = "";
 let isGodMode = false;
 let cheatDetected = false; 
-let playerSpeedMult = 1; 
+let playerSpeedMult = 1.8; 
 let moveAccumulator = 0;   
 
 // Contexts
@@ -270,7 +270,7 @@ function initGame(lvl, resetLives = true){
         cheatDetected = false; 
     }
     
-    playerSpeedMult = 1.8;
+    playerSpeedMult = 1;
     moveAccumulator = 0;
 
     levelStartTime = Date.now();
@@ -676,7 +676,7 @@ function resetAfterDeath(){
         stixList = []; player.drawing = false; player.dir = {x:0,y:0}; player.x = Math.floor(W/2); player.y = H-1;
         playerAnimScale = 0; 
         
-        playerSpeedMult = 2.0; 
+        playerSpeedMult = 1.8; 
         moveAccumulator = 0;
 
         qixList = []; 
@@ -1028,4 +1028,5 @@ window.addEventListener('load', () => {
         btn.addEventListener('touchstart', triggerMove, {passive: false});
         btn.addEventListener('mousedown', triggerMove);
     });
+
 });
