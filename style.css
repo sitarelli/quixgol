@@ -242,44 +242,42 @@ canvas {
         max-height: 50px; 
     }
 
-    #game-row {
+    
+#game-row {
         flex-wrap: wrap; 
         width: 100%;
-        justify-content: space-between; 
-        padding: 0 15px; 
-        box-sizing: border-box;
+        justify-content: center;
+        padding: 0; /* Rimuove padding laterale che causava sbordature */
+        gap: 0;
     }
 
     #game-wrapper {
         order: 1;
-        width: 90vw;
-        height: 90vw;
-        margin: 10px auto 20px auto;
+        width: 85vw; /* Ridotto leggermente per sicurezza */
+        height: 85vw; 
+        max-width: 400px; max-height: 400px;
+        margin: 0 auto 10px auto; /* Centrato con spazio sotto */
     }
 
     .side-col {
-        width: 45%; 
+        width: 50%; /* Si dividono la riga sotto il gioco */
         height: auto;
         flex-direction: column;
-        margin-bottom: 20px;
+        margin-bottom: 5px;
+        align-items: center !important; /* Centra il contenuto nella propria metà */
     }
 
-    .side-col.left-col {
-        order: 2;
-        align-items: flex-start;
-    }
+    .side-col.left-col { order: 2; }
     
-    .side-col.left-col .hud-vertical {
-        align-items: flex-start;
-        width: auto;
-    }
+    /* NASCONDE 'AREA' SU MOBILE per guadagnare spazio */
+    .side-col.left-col .hud-vertical:nth-of-type(2),
+    .side-col.left-col div[style*="height"] { display: none; }
 
-    .side-col.right-col {
-        order: 3;
-        align-items: flex-end;
-    }
+    .side-col.right-col { order: 3; }
     
+    /* Adatta il font dello score su mobile */
     .value-big { font-size: 24px; }
+
     
     #next-level-btn {
         font-size: 14px; 
@@ -499,13 +497,16 @@ canvas {
 
 
 
+
 .dpad-btn {
-    width: 75px; height: 75px; /* Aumentato da 60px */
+    width: 75px; height: 75px; /* Ingranditi da 60px */
     background: rgba(0, 20, 40, 0.9);
     border: 2px solid var(--primary);
     color: var(--primary);
-    font-size: 32px; /* Freccia più visibile */
+    font-size: 30px; /* Icona più grande */
     border-radius: 10px;
+
+
     cursor: pointer;
     touch-action: manipulation; /* Risposta rapida al tocco */
 }
@@ -518,12 +519,12 @@ canvas {
 
 
 #mobile-controls { 
-        display: flex;
-        order: 5; /* Spinge i controlli in fondo, sotto stats e mute */
-        width: 100%; /* Occupa tutta la larghezza per non affiancarsi a nulla */
-        margin-bottom: 20px; /* Un po' di aria dal fondo */
+        display: flex; 
+        width: 100%;
+        justify-content: center;
+        margin-top: 5px; /* Avvicinato al gioco (era 15px) */
+        order: 4; /* Assicura che stiano sotto a tutto */
     }
-
 
 
 
