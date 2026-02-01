@@ -156,8 +156,8 @@ body {
     height: 85vmin;
     
     /* Limiti massimi per desktop */
-    max-width: 650px;
-    max-height: 650px;
+    max-width: 550px;
+    max-height: 550px;
     
     /* IMPORTANTE: Impedisce a Flexbox di schiacciarlo verticalmente */
     flex-shrink: 0; 
@@ -483,15 +483,6 @@ canvas {
     font-family: 'Share Tech Mono', monospace;
 }
 
-/* --- CONTROLLI MOBILE --- */
-#mobile-controls {
-    display: none; /* Nascosto su PC */
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    margin-top: 15px; /* Stacca i tasti dal gioco */
-    z-index: 100;
-}
 
 .dpad-row { display: flex; gap: 5px; }
 
@@ -513,19 +504,82 @@ canvas {
 
 .dpad-btn:active { background: var(--primary); color: #000; }
 
-/* REGOLE SPECIFICHE MOBILE */
+
+/* --- REGOLE SPECIFICHE MOBILE (FIX SOVRAPPOSIZIONE) --- */
 @media (max-width: 768px) {
     
-
-
-#mobile-controls { 
-        display: flex; 
-        width: 100%;
-        justify-content: center;
-        margin-top: 5px; /* Avvicinato al gioco (era 15px) */
-        order: 4; /* Assicura che stiano sotto a tutto */
+    /* 1. SBLOCCO DELLA PAGINA */
+    /* Togliamo i vincoli di altezza fissa così gli elementi possono scendere */
+    body {
+        height: auto !important;       /* Fondamentale: permette alla pagina di allungarsi */
+        min-height: 100vh;
+        overflow-y: auto !important;   /* Abilita lo scroll se serve */
+        display: block !important;     /* Disabilita il flex centrale del body che schiacciava tutto */
+        padding-top: 10px;
+        padding-bottom: 50px;          /* Spazio in fondo per scorrere */
     }
 
+    #main-layout {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;   /* Allinea tutto in alto, non al centro */
+        height: auto;
+        width: 100%;
+    }
 
+    #header-row {
+        margin-bottom: 5px;
+        flex-shrink: 0;
+    }
 
+    /* 2. IL GIOCO (Quadrato centrale) */
+    #game-wrapper {
+        margin: 10px auto 30px auto !important; /* 30px di margine SOTTO per staccare i tasti */
+        width: 90vw;
+        height: 90vw;           /* Mantiene il quadrato */
+        max-height: 50vh;       /* Non occupare più di metà schermo */
+        flex-shrink: 0;         /* Impedisce che si schiacci */
+        order: 1;
+    }
+
+    /* 3. IL CONTENITORE SOTTO (HUD + TASTI) */
+    /* Qui usiamo !important per vincere sugli stili inline dell'HTML */
+    #bottom-hud {
+        display: flex !important;
+        flex-direction: column !important; /* Mette Area, Tasti e Score uno sotto l'altro */
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        height: auto !important;
+        margin-top: 0 !important;
+        gap: 20px !important;    /* Spazio tra i vari blocchetti */
+        order: 2;
+    }
+
+    /* Gestione delle 3 colonne dentro l'HUD */
+    .hud-column {
+        width: 100%;
+        display: flex !important;
+        justify-content: center;
+        margin: 0 !important;
+    }
+
+    /* 4. I TASTI DI GIOCO */
+    #mobile-controls { 
+        display: flex !important;         
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        position: relative !important; /* Toglie ogni posizionamento strano */
+        z-index: 10;
+        margin-top: 0 !important;
+    }
+    
+    /* Opzionale: Rimpicciolisce un po' i tasti se occupano troppo spazio */
+    .dpad-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
 }
