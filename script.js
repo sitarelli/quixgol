@@ -452,7 +452,7 @@ function draw() {
     }
 
     if(flashList.length > 0) {
-        entCtx.save(); entCtx.fillStyle = 'white'; entCtx.shadowColor = 'white'; entCtx.shadowBlur = 20; entCtx.beginPath();
+        entCtx.save(); entCtx.fillStyle = 'white'; entCtx.shadowColor = 'white'; entCtx.shadowBlur = 0; entCtx.beginPath();
         for (let i = flashList.length - 1; i >= 0; i--) {
             let f = flashList[i];
             let fx = f.idx % W; let fy = Math.floor(f.idx / W);
@@ -473,8 +473,8 @@ function draw() {
         for (let q of qixList) {
             entCtx.save(); entCtx.translate((q.x + 0.5) * scaleX, (q.y + 0.5) * scaleY);
             let angle = Math.atan2(q.vy, q.vx); entCtx.rotate(angle + Math.PI / 2);
-            if(isDying) { entCtx.shadowColor = 'red'; entCtx.shadowBlur = 20; } 
-            else if (level >= 6) { entCtx.shadowColor = '#ff0000'; entCtx.shadowBlur = 20; }
+            if(isDying) { entCtx.shadowColor = 'red'; entCtx.shadowBlur = 0; } 
+            else if (level >= 6) { entCtx.shadowColor = '#ff0000'; entCtx.shadowBlur = 0; }
             entCtx.font = `${Math.min(scaleX, scaleY) * 7.5}px serif`; entCtx.textAlign = 'center'; entCtx.textBaseline = 'middle';
             entCtx.fillText('🕷️', 0, 0); entCtx.restore();
         }
@@ -483,7 +483,7 @@ function draw() {
             entCtx.save(); entCtx.translate((ep.x + 0.5) * scaleX, (ep.y + 0.5) * scaleY);
             ep.angle += 0.1; 
             entCtx.rotate(ep.angle);
-            entCtx.shadowColor = '#ff0000'; entCtx.shadowBlur = 25; 
+            entCtx.shadowColor = '#ff0000'; entCtx.shadowBlur = 0; 
             entCtx.font = `${Math.min(scaleX, scaleY) * 5.5}px sans-serif`; entCtx.textAlign = 'center'; entCtx.textBaseline = 'middle';
             entCtx.fillText('⚽', 0, 0); 
             entCtx.restore();
@@ -505,7 +505,7 @@ function draw() {
         
         for(let i = floatingTexts.length - 1; i >= 0; i--){
             let ft = floatingTexts[i]; entCtx.save(); let color = ft.color || 'white'; entCtx.fillStyle = color; entCtx.globalAlpha = ft.opacity;
-            let fontSize = ft.size || 24; entCtx.font = `bold ${fontSize}px 'Orbitron', sans-serif`; entCtx.textAlign = 'center'; entCtx.shadowColor = color; entCtx.shadowBlur = 10;
+            let fontSize = ft.size || 24; entCtx.font = `bold ${fontSize}px 'Orbitron', sans-serif`; entCtx.textAlign = 'center'; entCtx.shadowColor = color; entCtx.shadowBlur = 0;
             let drawX = (ft.x + 0.5) * scaleX; let drawY = (ft.y + 0.5) * scaleY - 30 - (1.0 - ft.opacity)*20; 
             entCtx.fillText(ft.text, drawX, drawY); entCtx.globalAlpha = 1.0; entCtx.restore();
             ft.timer -= deltaTime; if(ft.timer < 500) ft.opacity = ft.timer / 500;
@@ -594,7 +594,7 @@ function closeStixAndFill(){
             score += POINTS_KILL_SPIDER;
             spawnFloatingText("ENEMY KILLED!", q.x, q.y, 20, '#ff0000');
             spawnFloatingText("SPEED UP!", q.x, q.y + 20, 20, '#00ffff', 2000);
-            playerSpeedMult += SPEED_BOOST_PER_KILL;
+            playerSpeedMult = Math.min(4.5, playerSpeedMult + SPEED_BOOST_PER_KILL);
             killed = true;
         }
     }
@@ -610,7 +610,7 @@ function closeStixAndFill(){
             score += POINTS_KILL_EVIL;
             spawnFloatingText("RIVAL ELIMINATED!", ep.x, ep.y, 20, '#ff0000');
             spawnFloatingText("SPEED UP!", ep.x, ep.y + 20, 20, '#00ffff', 2000);
-            playerSpeedMult += SPEED_BOOST_PER_KILL;
+            playerSpeedMult = Math.min(4.5, playerSpeedMult + SPEED_BOOST_PER_KILL);
             killed = true;
         }
     }
@@ -732,7 +732,7 @@ function drawVictory() {
     let fontSize = Math.floor(Math.min(entityCanvas.width, entityCanvas.height) / 5);
     entCtx.font = `bold ${fontSize}px 'Orbitron', sans-serif`;
     entCtx.textAlign = 'center'; entCtx.textBaseline = 'middle';
-    entCtx.fillStyle = '#00ff00'; entCtx.shadowColor = '#ffffff'; entCtx.shadowBlur = 30;
+    entCtx.fillStyle = '#00ff00'; entCtx.shadowColor = '#ffffff'; entCtx.shadowBlur = 0;
     entCtx.fillText("VICTORY!", entityCanvas.width / 2, entityCanvas.height / 2);
     entCtx.restore();
 }
@@ -822,17 +822,26 @@ function gameLoop(now){
     if (!isDying && !isVictory) { 
         moveQix(); 
         
-        moveAccumulator += (1 * playerSpeedMult); 
+   
+moveAccumulator += (1 * playerSpeedMult); 
         
-        while (moveAccumulator >= 1) {
+        let loops = 0;
+        while (moveAccumulator >= 1 && loops < 8) { // MAX 8 step fisici per frame per evitare freeze
             tickPlayer();
             checkCollisions(); 
             moveAccumulator -= 1;
+            loops++;
             
             if(isDying || isVictory) break; 
         }
+        if (loops >= 8) moveAccumulator = 0; // Scarta l'accumulo eccessivo
     }
     if(!isVictory) draw();
+
+
+
+
+
     requestAnimationFrame(gameLoop);
 }
 
