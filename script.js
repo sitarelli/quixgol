@@ -108,7 +108,7 @@ function preloadLevelImages() {
     // MODIFICA: Carica fino a TOTAL_IMAGES (100)
     for (let i = 1; i <= TOTAL_IMAGES; i++) {
         const img = new Image();
-        img.src = `img${i}.jpg`; 
+        img.src = `img/img${i}.jpg`; 
         levelImages[i] = img;
     }
 }
@@ -285,7 +285,7 @@ function initGame(lvl, resetLives = true){
 
     // --- IMMAGINI INFINITE (Rotazione 1-100) ---
     let imgIndex = ((level - 1) % TOTAL_IMAGES) + 1;
-    let imgSource = `img${imgIndex}.jpg`;
+    let imgSource = `img/img${imgIndex}.jpg`;
 
     currentBgImage = new Image();
     currentBgImage.src = imgSource;
