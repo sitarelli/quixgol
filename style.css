@@ -170,6 +170,12 @@ body {
 }
 
 /* Su schermi molto stretti o corti, riduciamo un po' per lasciare spazio all'UI */
+
+/* --- AGGIUNTA: Nascondi controlli su Desktop --- */
+#mobile-controls {
+    display: none !important; /* !important serve per vincere sullo stile inline dell'HTML */
+}
+
 @media (max-width: 768px) {
     #game-wrapper {
         width: 90vw; /* Su mobile usiamo la larghezza come riferimento */
@@ -291,7 +297,7 @@ canvas {
 /* --- MEDIA QUERY (Schermi molto bassi) --- */
 @media (max-height: 600px) {
     #game-logo { max-height: 30px; }
-    #header-row { margin-bottom: 5px; }
+    #header-row { margin-bottom: 0px; }
     .label-mini { display: none; } 
     
     #game-wrapper {
@@ -535,7 +541,7 @@ canvas {
 
     /* 2. IL GIOCO (Quadrato centrale) */
     #game-wrapper {
-        margin: 10px auto 30px auto !important; /* 30px di margine SOTTO per staccare i tasti */
+        margin: 0px auto 30px auto !important; /* 30px di margine SOTTO per staccare i tasti */
         width: 90vw;
         height: 90vw;           /* Mantiene il quadrato */
         max-height: 50vh;       /* Non occupare più di metà schermo */
