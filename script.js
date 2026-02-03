@@ -898,7 +898,7 @@ function disegnaLista(data) {
 
 window.salvaPunteggio = async function() {
     const nome = playerNameInput.value.trim();
-    if (nome.length === 0 || nome.length > 8) { alert("Inserisci un nome valido (1-8 caratteri)"); return; }
+    if (nome.length === 0 || nome.length > 16) { alert("Inserisci un nome valido (1-16 caratteri)"); return; }
     const btn = document.getElementById('btn-save'); if(btn) { btn.disabled = true; btn.innerText = "Salvataggio..."; }
     
     const { error } = await dbClient.from('classifica').insert([{ nome: nome, punteggio: score }]);
@@ -1053,3 +1053,4 @@ window.addEventListener('load', () => {
     });
 
 });
+
