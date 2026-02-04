@@ -572,17 +572,22 @@ canvas {
         margin: 0 !important;
     }
 
-  #joystick-container {
-    width: 120px;
-    height: 120px;
+ #joystick-container {
+    width: 100px;        /* Ridotto da 120px a 100px per stare negli schermi piccoli */
+    height: 100px;
+    flex-shrink: 0;      /* FONDAMENTALE: impedisce che sparisca se manca spazio */
     display: flex;
     justify-content: center;
     align-items: center;
     touch-action: none;
+    z-index: 9999;
+    margin: 5px 0;       /* Ridotto margine */
+    background: rgba(0, 0, 0, 0.3); /* Sfondo scuro per contrasto */
+    border-radius: 50%;
 }
 #joystick-base {
-    width: 100px;
-    height: 100px;
+    width: 80px;         /* Ridotto proporzionalmente */
+    height: 80px;
     background: rgba(255, 255, 255, 0.1);
     border: 2px solid var(--primary);
     border-radius: 50%;
@@ -590,14 +595,15 @@ canvas {
     display: flex;
     justify-content: center;
     align-items: center;
+    box-shadow: 0 0 10px var(--primary); /* Glow per vederlo bene */
 }
 #joystick-stick {
-    width: 40px;
-    height: 40px;
-    background: var(--primary);
+    width: 30px;
+    height: 30px;
+    background: var(--danger); /* ROSSO (Danger) per vederlo meglio */
     border-radius: 50%;
-    box-shadow: 0 0 15px var(--primary);
+    box-shadow: 0 0 10px var(--danger);
     position: absolute;
-    transition: transform 0.1s ease;
-}
+    pointer-events: none;
+    transition: transform 0.05s linear;
 }

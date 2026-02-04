@@ -1047,61 +1047,55 @@ if(startBtn) {
 window.addEventListener('load', () => {
     const container = document.getElementById('joystick-container');
     const stick = document.getElementById('joystick-stick');
+    
+    // Variabili di stato
     let active = false;
-    let startX, startY;
+    let centerX, centerY;
+    const maxDist = 30; // Distanza massima stick
 
-    // Funzione che calcola la direzione
-    const handleInput = (clientX, clientY) => {
-        if (!active) return;
-        
-        const rect = container.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
-        
-        const dx = clientX - centerX;
-        const dy = clientY - centerY;
-        
-        // Calcola la distanza dal centro per limitare il movimento dello stick visivo
-        const distance = Math.min(Math.sqrt(dx*dx + dy*dy), 30); // 30px è il raggio massimo visivo
-        const angle = Math.atan2(dy, dx);
-        
-        // Muove lo stick visivamente
-        const moveX = Math.cos(angle) * distance;
-        const moveY = Math.sin(angle) * distance;
-        stick.style.transform = `translate(${moveX}px, ${moveY}px)`;
-
-        // Logica di Gioco (Direzione) - Soglia di sensibilità 10px
-        if (Math.abs(dx) > Math.abs(dy)) {
-            if (dx > 10) nextDir = {x: 1, y: 0};      // Destra
-            else if (dx < -10) nextDir = {x: -1, y: 0}; // Sinistra
-        } else {
-            if (dy > 10) nextDir = {x: 0, y: 1};      // Giù
-            else if (dy < -10) nextDir = {x: 0, y: -1}; // Su
-        }
-    };
-
-    // Eventi Touch
+    // Calcola le coordinate quando tocchi lo schermo
     container.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Blocca zoom/scroll
         active = true;
-        handleInput(e.touches[0].clientX, e.touches[0].clientY);
-        e.preventDefault(); // Evita scroll pagina
+        const rect = container.getBoundingClientRect();
+        centerX = rect.left + rect.width / 2;
+        centerY = rect.top + rect.height / 2;
+        
+        // Esegue subito un update per reattività immediata
+        updateJoystick(e.touches[0].clientX, e.touches[0].clientY);
     }, {passive: false});
 
     container.addEventListener('touchmove', (e) => {
-        if(active) {
-            handleInput(e.touches[0].clientX, e.touches[0].clientY);
-            e.preventDefault();
-        }
+        if (!active) return;
+        e.preventDefault();
+        updateJoystick(e.touches[0].clientX, e.touches[0].clientY);
     }, {passive: false});
 
-    // Reset quando si lascia il dito
-    const resetJoystick = () => {
+    const reset = () => {
         active = false;
-        stick.style.transform = 'translate(0,0)';
+        stick.style.transform = `translate(0px, 0px)`;
     };
+    container.addEventListener('touchend', reset);
+    container.addEventListener('touchcancel', reset);
 
-    container.addEventListener('touchend', resetJoystick);
-    container.addEventListener('touchcancel', resetJoystick);
+    function updateJoystick(clientX, clientY) {
+        const dx = clientX - centerX;
+        const dy = clientY - centerY;
+        const angle = Math.atan2(dy, dx);
+        const dist = Math.min(Math.sqrt(dx*dx + dy*dy), maxDist);
+
+        // Muovi la grafica
+        const moveX = Math.cos(angle) * dist;
+        const moveY = Math.sin(angle) * dist;
+        stick.style.transform = `translate(${moveX}px, ${moveY}px)`;
+
+        // Logica Direzione (Soglia minima 10px)
+        if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 10) nextDir = {x: 1, y: 0};
+            else if (dx < -10) nextDir = {x: -1, y: 0};
+        } else {
+            if (dy > 10) nextDir = {x: 0, y: 1};
+            else if (dy < -10) nextDir = {x: 0, y: -1};
+        }
+    }
 });
-
-
