@@ -1050,56 +1050,121 @@ window.addEventListener('load', () => {
     
     let active = false;
     let centerX, centerY;
-    const maxDist = 35; // Distanza massima visiva dello stick
+    const maxDist = 35; // Raggio visuale stick
 
-    // 1. INIZIO TOCCO (Solo sul Joystick)
-    container.addEventListener('touchstart', (e) => {
+    // Funzione che calcola la direzione basandosi sull'ANGOLO (più preciso)
+    const updateDirection = (clientX, clientY) => {
+        const dx = clientX - centerX;
+        const dy = clientY - centerY;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        // 1. Muovi lo stick visivo
+        const visualDist = Math.min(dist, maxDist);
+        const angle = Math.atan2(dy, dx); // Angolo in radianti
+        
+        const moveX = Math.cos(angle) * visualDist;
+        const moveY = Math.sin(angle) * visualDist;
+        stick.style.transform = `translate(${moveX}px, ${moveY}px)`;
+
+        // 2. Logica di Gioco (Solo se ci siamo mossi di almeno 5px)
+        if (dist > 5) {
+            // Convertiamo l'angolo in gradi (0 a 360) per facilità
+            let degrees = angle * (180 / Math.PI);
+            
+            // Assegnazione basata su 4 settori (con sovrapposizione diagonale minima)
+            if (degrees > -45 && degrees <= 45) {
+                nextDir = {x: 1, y: 0}; // DESTRA
+            } else if (degrees > 45 && degrees <= 135) {
+                nextDir = {x: 0, y: 1}; // GIÙ
+            } else if (degrees > 135 || degrees <= -135) {
+                nextDir = {x: -1, y: 0}; // SINISTRA
+            } else if (degrees > -135 && degrees <= -45) {
+                nextDir = {x: 0, y: -1}; // SU
+            }
+        }
+    };
+
+    // --- EVENTI ---
+    const startInput = (e) => {
         e.preventDefault();
         active = true;
-        
-        // Calcoliamo il centro ESATTO nel momento in cui tocchi
         const rect = container.getBoundingClientRect();
         centerX = rect.left + rect.width / 2;
         centerY = rect.top + rect.height / 2;
         
-        handleMove(e.touches[0].clientX, e.touches[0].clientY);
-    }, {passive: false});
+        // Gestione mouse o touch
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        updateDirection(clientX, clientY);
+    };
 
-    // 2. MOVIMENTO (Su tutto il documento, così se esci dal cerchio funziona lo stesso!)
-    document.addEventListener('touchmove', (e) => {
+    const moveInput = (e) => {
         if (!active) return;
-        e.preventDefault(); // Blocca lo scroll della pagina mentre giochi
-        handleMove(e.touches[0].clientX, e.touches[0].clientY);
-    }, {passive: false});
+        e.preventDefault(); // Blocca lo scroll
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        updateDirection(clientX, clientY);
+    };
 
-    // 3. FINE TOCCO (Su tutto il documento)
-    const stopMove = () => {
+    const stopInput = () => {
         active = false;
         stick.style.transform = `translate(0px, 0px)`;
     };
-    document.addEventListener('touchend', stopMove);
-    document.addEventListener('touchcancel', stopMove);
 
-    // FUNZIONE DI CALCOLO UNICA
-    function handleMove(clientX, clientY) {
-        const dx = clientX - centerX;
-        const dy = clientY - centerY;
-        
-        // Logica visiva (Il pallino segue il dito ma non esce dal cerchio)
-        const angle = Math.atan2(dy, dx);
-        const dist = Math.min(Math.sqrt(dx*dx + dy*dy), maxDist);
-        const moveX = Math.cos(angle) * dist;
-        const moveY = Math.sin(angle) * dist;
-        stick.style.transform = `translate(${moveX}px, ${moveY}px)`;
+    // TOUCH (Mobile) - "passive: false" è cruciale per bloccare lo scroll
+    container.addEventListener('touchstart', startInput, {passive: false});
+    document.addEventListener('touchmove', moveInput, {passive: false});
+    document.addEventListener('touchend', stopInput);
 
-        // Logica di Gioco (Aggiorna la variabile globale nextDir)
-        // La soglia è bassa (10px) per essere molto reattivo
-        if (Math.abs(dx) > Math.abs(dy)) {
-            if (dx > 10) nextDir = {x: 1, y: 0};       // DESTRA
-            else if (dx < -10) nextDir = {x: -1, y: 0}; // SINISTRA
-        } else {
-            if (dy > 10) nextDir = {x: 0, y: 1};       // GIU
-            else if (dy < -10) nextDir = {x: 0, y: -1}; // SU
-        }
+    // MOUSE (PC per test)
+    container.addEventListener('mousedown', startInput);
+    document.addEventListener('mousemove', moveInput);
+    document.addEventListener('mouseup', stopInput);
+
+// ===============================
+// MOBILE FALLBACK DIRECTION FIX
+// ===============================
+
+let touchStartX2 = 0;
+let touchStartY2 = 0;
+let touchActive2 = false;
+
+window.addEventListener('touchstart', (e) => {
+    if (e.target.closest('button')) return;
+
+    const t = e.touches[0];
+    touchStartX2 = t.clientX;
+    touchStartY2 = t.clientY;
+    touchActive2 = true;
+
+    tryPlayMusic();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+}, { passive: false });
+
+window.addEventListener('touchmove', (e) => {
+    if (!touchActive2) return;
+    e.preventDefault();
+
+    const t = e.touches[0];
+    const dx = t.clientX - touchStartX2;
+    const dy = t.clientY - touchStartY2;
+
+    const absX = Math.abs(dx);
+    const absY = Math.abs(dy);
+    const DEADZONE = 12;
+
+    if (absX < DEADZONE && absY < DEADZONE) return;
+
+    if (absX > absY) {
+        player.dir = { x: dx > 0 ? 1 : -1, y: 0 };
+    } else {
+        player.dir = { x: 0, y: dy > 0 ? 1 : -1 };
     }
+}, { passive: false });
+
+window.addEventListener('touchend', () => {
+    touchActive2 = false;
+});
+
+
 });
