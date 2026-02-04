@@ -831,9 +831,24 @@ function tickPlayer(){
 let lastTime = performance.now(); let deltaTime = 0;
 function gameLoop(now){
 
-    if (!isPlaying && !isVictory) return;
-if (now - lastTime < 16) { requestAnimationFrame(gameLoop); return; }
-    deltaTime = now - lastTime; lastTime = now;
+ if (!isPlaying && !isVictory) return;
+
+// CAP FPS: Limita a ~60fps per evitare velocità eccessiva (es. su 144hz)
+    if (now - lastTime < 16) { requestAnimationFrame(gameLoop); return; }
+
+    // Calcola il tempo trascorso
+    let rawDelta = now - lastTime;
+    // RALLENTAMENTO MOBILE: Se siamo su schermo piccolo, il gioco scorre all'80% della velocità (0.8)
+    // Cambia 0.8 in 0.5 per dimezzare la velocità, o 1.0 per disattivare.
+    if (window.innerWidth < 768) { rawDelta *= 0.8; }
+    
+    deltaTime = rawDelta;
+    lastTime = now;
+
+
+
+
+   
     if (!isDying && !isVictory) { 
         moveQix(); 
         
