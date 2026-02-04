@@ -1048,54 +1048,58 @@ window.addEventListener('load', () => {
     const container = document.getElementById('joystick-container');
     const stick = document.getElementById('joystick-stick');
     
-    // Variabili di stato
     let active = false;
     let centerX, centerY;
-    const maxDist = 30; // Distanza massima stick
+    const maxDist = 35; // Distanza massima visiva dello stick
 
-    // Calcola le coordinate quando tocchi lo schermo
+    // 1. INIZIO TOCCO (Solo sul Joystick)
     container.addEventListener('touchstart', (e) => {
-        e.preventDefault(); // Blocca zoom/scroll
+        e.preventDefault();
         active = true;
+        
+        // Calcoliamo il centro ESATTO nel momento in cui tocchi
         const rect = container.getBoundingClientRect();
         centerX = rect.left + rect.width / 2;
         centerY = rect.top + rect.height / 2;
         
-        // Esegue subito un update per reattività immediata
-        updateJoystick(e.touches[0].clientX, e.touches[0].clientY);
+        handleMove(e.touches[0].clientX, e.touches[0].clientY);
     }, {passive: false});
 
-    container.addEventListener('touchmove', (e) => {
+    // 2. MOVIMENTO (Su tutto il documento, così se esci dal cerchio funziona lo stesso!)
+    document.addEventListener('touchmove', (e) => {
         if (!active) return;
-        e.preventDefault();
-        updateJoystick(e.touches[0].clientX, e.touches[0].clientY);
+        e.preventDefault(); // Blocca lo scroll della pagina mentre giochi
+        handleMove(e.touches[0].clientX, e.touches[0].clientY);
     }, {passive: false});
 
-    const reset = () => {
+    // 3. FINE TOCCO (Su tutto il documento)
+    const stopMove = () => {
         active = false;
         stick.style.transform = `translate(0px, 0px)`;
     };
-    container.addEventListener('touchend', reset);
-    container.addEventListener('touchcancel', reset);
+    document.addEventListener('touchend', stopMove);
+    document.addEventListener('touchcancel', stopMove);
 
-    function updateJoystick(clientX, clientY) {
+    // FUNZIONE DI CALCOLO UNICA
+    function handleMove(clientX, clientY) {
         const dx = clientX - centerX;
         const dy = clientY - centerY;
+        
+        // Logica visiva (Il pallino segue il dito ma non esce dal cerchio)
         const angle = Math.atan2(dy, dx);
         const dist = Math.min(Math.sqrt(dx*dx + dy*dy), maxDist);
-
-        // Muovi la grafica
         const moveX = Math.cos(angle) * dist;
         const moveY = Math.sin(angle) * dist;
         stick.style.transform = `translate(${moveX}px, ${moveY}px)`;
 
-        // Logica Direzione (Soglia minima 10px)
+        // Logica di Gioco (Aggiorna la variabile globale nextDir)
+        // La soglia è bassa (10px) per essere molto reattivo
         if (Math.abs(dx) > Math.abs(dy)) {
-            if (dx > 10) nextDir = {x: 1, y: 0};
-            else if (dx < -10) nextDir = {x: -1, y: 0};
+            if (dx > 10) nextDir = {x: 1, y: 0};       // DESTRA
+            else if (dx < -10) nextDir = {x: -1, y: 0}; // SINISTRA
         } else {
-            if (dy > 10) nextDir = {x: 0, y: 1};
-            else if (dy < -10) nextDir = {x: 0, y: -1};
+            if (dy > 10) nextDir = {x: 0, y: 1};       // GIU
+            else if (dy < -10) nextDir = {x: 0, y: -1}; // SU
         }
     }
 });
