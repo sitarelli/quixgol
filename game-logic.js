@@ -292,30 +292,53 @@ function closeStixAndFill(){
         spawnFloatingText(Math.floor(newPercent) + "%", player.x, player.y);
         currentPercent = newPercent; 
         
-        // 🎆 EFFETTI VISIVI SPETTACOLARI in base all'area chiusa
-        if(filledCount > 200) {
-            // MEGA AREA - Esplosione dorata gigante + FLASH ORO!
-            spawnParticles(player.x, player.y, 'mega_fill');
-            spawnFloatingText("🌟 MEGA COMBO! 🌟", player.x, player.y - 15, 28, '#ffff00', 3000);
-            triggerScreenFlash('#ffff00', 0.5); // Flash oro
-            addShake(8);
+// 1. CALCOLO DEL CENTRO (ottimizzato per il tuo sistema a indici)
+let centerX = player.x;
+let centerY = player.y;
+
+if (filledCount > 0 && capturedAreas.length > 0) {
+    let minX = Infinity, maxX = -Infinity;
+    let minY = Infinity, maxY = -Infinity;
+
+    // Cicliamo tra le aree catturate per trovare i confini
+    for (let area of capturedAreas) {
+        for (let idxVal of area) {
+            let x = idxVal % W;
+            let y = Math.floor(idxVal / W);
+            if (x < minX) minX = x;
+            if (x > maxX) maxX = x;
+            if (y < minY) minY = y;
+            if (y > maxY) maxY = y;
         }
-        else if(filledCount > 100) {
-            // GRANDE AREA - Esplosione brillante + FLASH VERDE
-            spawnParticles(player.x, player.y, 'fill_spark', filledCount);
-            spawnFloatingText("✨ BIG CATCH! ✨", player.x, player.y - 10, 22, '#00ffff', 2500);
-            triggerScreenFlash('#00ff00', 0.3); // Flash verde
-            addShake(5);
-        }
-        else if(filledCount > 50) {
-            // MEDIA AREA - Scintille
-            spawnParticles(player.x, player.y, 'fill_spark', filledCount);
-            addShake(3);
-        }
-        else {
-            // PICCOLA AREA - Effetto base migliorato
-            spawnParticles(player.x, player.y, 'fill_spark', filledCount);
-        }
+    }
+
+    // Se abbiamo trovato dei punti validi, calcoliamo il centro
+    if (minX !== Infinity) {
+        centerX = minX + (maxX - minX) / 2;
+        centerY = minY + (maxY - minY) / 2;
+    }
+}
+
+// 2. 🎆 EFFETTI VISIVI AL CENTRO DELL'AREA
+if (filledCount > 2800) {
+    spawnParticles(centerX, centerY, 'mega_fill');
+    spawnFloatingText("MEGA!", centerX, centerY - 15, 28, '#ffff00', 3000);
+    triggerScreenFlash('#ffff00', 0.5); 
+    addShake(8);
+} 
+else if (filledCount > 200) {
+    spawnParticles(centerX, centerY, 'fill_spark', filledCount);
+    spawnFloatingText("BEL COLPO!", centerX, centerY - 10, 22, '#00ffff', 2500);
+    triggerScreenFlash('#00ff00', 0.3);
+    addShake(5);
+} 
+else if (filledCount > 50) {
+    spawnParticles(centerX, centerY, 'fill_spark', filledCount);
+    addShake(3);
+} 
+else if (filledCount > 0) {
+    spawnParticles(centerX, centerY, 'fill_spark', filledCount);
+}
     }
 
     updateUI(); 

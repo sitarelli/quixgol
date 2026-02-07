@@ -225,90 +225,228 @@ function triggerScreenFlash(color, intensity = 0.7) {
     screenFlashAlpha = intensity;
 }
 
+// 🎆 ANIMAZIONE VITTORIA CON EFFETTI CANDY CRUSH
 function drawVictory() {
     entCtx.save();
     entCtx.setTransform(1, 0, 0, 1, 0, 0);
     entCtx.clearRect(0, 0, entityCanvas.width, entityCanvas.height);
     
-    // 🎆 SEQUENZA ANIMATA VITTORIA
     victoryAnimTimer++;
     
-    // STEP 1: Onda di rivelazione (reveal wave)
+    // STEP 1: Reveal circolare dell'immagine completa (tipo Candy Crush)
     if(victorySequenceStep === 0) {
-        revealProgress += 0.03;
+        revealProgress += 0.02;
         
-        // Disegna l'immagine rivelata progressivamente
+        // Overlay scuro di sfondo
+        entCtx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        entCtx.fillRect(0, 0, entityCanvas.width, entityCanvas.height);
+        
+        // ✨ GLITTER durante il reveal
+        if(Math.random() < 0.3) {
+            let gx = Math.random() * entityCanvas.width;
+            let gy = Math.random() * entityCanvas.height;
+            let glitterColors = ['#ffffff', '#ffff00', '#00ffff', '#ff00ff', '#ffd700'];
+            particles.push({
+                x: gx / scaleX,
+                y: gy / scaleY,
+                vx: (Math.random() - 0.5) * 0.3,
+                vy: (Math.random() - 0.5) * 0.3,
+                life: 1.0,
+                decay: 0.02,
+                color: glitterColors[Math.floor(Math.random() * glitterColors.length)],
+                size: 2 + Math.random() * 2
+            });
+        }
+        
+        // Disegna particelle glitter
+        for(let i = particles.length - 1; i >= 0; i--){
+            let p = particles[i]; 
+            entCtx.fillStyle = p.color; 
+            entCtx.globalAlpha = p.life;
+            let particleSize = (p.size || 1) * Math.min(scaleX, scaleY);
+            entCtx.fillRect(p.x * scaleX - particleSize/2, p.y * scaleY - particleSize/2, particleSize, particleSize);
+            entCtx.globalAlpha = 1.0; 
+            p.x += p.vx; p.y += p.vy; 
+            p.vx *= 0.97;
+            p.vy *= 0.97; 
+            p.life -= p.decay;
+            if(p.life <= 0) particles.splice(i, 1);
+        }
+        
+        // Disegna l'immagine rivelata progressivamente con effetto circolare
         entCtx.save();
         entCtx.beginPath();
         entCtx.arc(
             entityCanvas.width / 2, 
             entityCanvas.height / 2, 
-            revealProgress * entityCanvas.width, 
+            revealProgress * entityCanvas.width * 0.8, 
             0, Math.PI * 2
         );
         entCtx.clip();
-        entCtx.globalAlpha = revealProgress;
+        entCtx.globalAlpha = Math.min(1, revealProgress * 1.5);
         if(currentBgImage) {
             entCtx.drawImage(currentBgImage, 0, 0, entityCanvas.width, entityCanvas.height);
         }
         entCtx.restore();
         
-        if(revealProgress >= 1.2) {
+        // Bordo dorato pulsante attorno al cerchio rivelato
+        if(revealProgress > 0.2) {
+            entCtx.save();
+            entCtx.strokeStyle = '#ffd700';
+            entCtx.lineWidth = 8;
+            entCtx.shadowColor = '#ffff00';
+            entCtx.shadowBlur = 20 + Math.sin(victoryAnimTimer * 0.1) * 10;
+            entCtx.beginPath();
+            entCtx.arc(
+                entityCanvas.width / 2, 
+                entityCanvas.height / 2, 
+                revealProgress * entityCanvas.width * 0.8, 
+                0, Math.PI * 2
+            );
+            entCtx.stroke();
+            entCtx.restore();
+        }
+        
+        // Passa allo step successivo quando il reveal è completo
+        if(revealProgress >= 1.3) {
             victorySequenceStep = 1;
             victoryAnimTimer = 0;
+            
+            // 🎆 ESPLOSIONE FINALE di particelle
+            for(let i = 0; i < 50; i++) {
+                let angle = (Math.PI * 2 * i) / 50;
+                let distance = 0.3 + Math.random() * 0.5;
+                particles.push({
+                    x: entityCanvas.width / (2 * scaleX),
+                    y: entityCanvas.height / (2 * scaleY),
+                    vx: Math.cos(angle) * distance,
+                    vy: Math.sin(angle) * distance,
+                    life: 1.0,
+                    decay: 0.015,
+                    color: ['#ffff00', '#ff00ff', '#00ffff', '#ffd700'][Math.floor(Math.random() * 4)],
+                    size: 2
+                });
+            }
         }
     }
     
-    // STEP 2: Testo VICTORY pulsante + fireworks
+    // STEP 2: Testo COMPLETED + NEXT LEVEL + Fireworks continui
     if(victorySequenceStep >= 1) {
-        entCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+        // Sfondo semi-trasparente
+        entCtx.fillStyle = 'rgba(0, 0, 0, 0.4)';
         entCtx.fillRect(0, 0, entityCanvas.width, entityCanvas.height);
         
-        // Fireworks casuali
-        if(Math.random() < 0.15) {
+        // 🎆 FIREWORKS continui
+        if(Math.random() < 0.2) {
             let fx = Math.random() * entityCanvas.width;
-            let fy = Math.random() * entityCanvas.height * 0.6;
-            let colors = ['#ffff00', '#ff00ff', '#00ffff', '#ff0000', '#00ff00'];
-            for(let i = 0; i < 20; i++) {
-                let angle = (Math.PI * 2 * i) / 20;
+            let fy = Math.random() * entityCanvas.height * 0.5;
+            let colors = ['#ffff00', '#ff00ff', '#00ffff', '#ff0000', '#00ff00', '#ffd700', '#ff6600'];
+            let particleCount = 25 + Math.floor(Math.random() * 15);
+            
+            for(let i = 0; i < particleCount; i++) {
+                let angle = (Math.PI * 2 * i) / particleCount;
+                let speed = 0.4 + Math.random() * 0.4;
                 particles.push({
                     x: fx / scaleX,
                     y: fy / scaleY,
-                    vx: Math.cos(angle) * 0.5,
-                    vy: Math.sin(angle) * 0.5,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
                     life: 1.0,
-                    decay: 0.02,
+                    decay: 0.018,
                     color: colors[Math.floor(Math.random() * colors.length)],
-                    size: 1.5
+                    size: 1.5 + Math.random()
                 });
             }
         }
         
-        // Testo VICTORY pulsante (RIDOTTO DIMENSIONE, SPOSTATO IN BASSO)
-        let pulse = 1 + Math.sin(victoryAnimTimer * 0.1) * 0.15;
-        let fontSize = Math.floor(Math.min(entityCanvas.width, entityCanvas.height) / 12 * pulse); // Ridotto da /7 a /12 per font più piccolo
-
-        // Posizione nella parte medio-bassa dello schermo (70% dall'alto)
-        let textYPosition = entityCanvas.height * 0.70;
-
-        entCtx.font = `900 ${fontSize}px Arial Black, Arial, sans-serif`; // Font extra-bold (900) per aspetto paffuto
+        // ✨ GLITTER che cade dall'alto
+        if(Math.random() < 0.4) {
+            particles.push({
+                x: Math.random() * (entityCanvas.width / scaleX),
+                y: 0,
+                vx: (Math.random() - 0.5) * 0.2,
+                vy: 0.3 + Math.random() * 0.3,
+                life: 1.0,
+                decay: 0.01,
+                color: ['#ffffff', '#ffff00', '#ffd700'][Math.floor(Math.random() * 3)],
+                size: 2 + Math.random() * 2
+            });
+        }
+        
+        // Disegna tutte le particelle (fireworks + glitter)
+        for(let i = particles.length - 1; i >= 0; i--){
+            let p = particles[i]; 
+            entCtx.fillStyle = p.color; 
+            entCtx.globalAlpha = p.life;
+            let particleSize = (p.size || 1) * Math.min(scaleX, scaleY);
+            entCtx.fillRect(p.x * scaleX - particleSize/2, p.y * scaleY - particleSize/2, particleSize, particleSize);
+            entCtx.globalAlpha = 1.0; 
+            p.x += p.vx; p.y += p.vy; 
+            p.vx *= 0.97;
+            p.vy *= 0.97; 
+            p.life -= p.decay;
+            if(p.life <= 0) particles.splice(i, 1);
+        }
+        
+        // 📝 TESTO "COMPLETED" 
+        let pulse = 1 + Math.sin(victoryAnimTimer * 0.1) * 0.12;
+        let completedSize = Math.floor(Math.min(entityCanvas.width, entityCanvas.height) / 8 * pulse);
+        
+        entCtx.font = `900 ${completedSize}px Arial Black, Arial, sans-serif`;
         entCtx.textAlign = 'center'; 
         entCtx.textBaseline = 'middle';
-        
-        // Ombra colorata pulsante
-        entCtx.shadowColor = currentSkin.trail;
-        entCtx.shadowBlur = 30 + Math.sin(victoryAnimTimer * 0.15) * 20;
-        
+        entCtx.shadowColor = '#00ff00';
+        entCtx.shadowBlur = 40 + Math.sin(victoryAnimTimer * 0.15) * 20;
         entCtx.fillStyle = '#00ff00';
-        entCtx.fillText("COMPLETED", entityCanvas.width / 2, textYPosition);
+        entCtx.fillText("COMPLETED", entityCanvas.width / 2, entityCanvas.height * 0.35);
         
-        // Sottotitolo (MOLTO PIÙ PICCOLO)
+        // 📝 TESTO "NEXT LEVEL"
+        entCtx.shadowColor = '#ffd700';
+        entCtx.shadowBlur = 30 + Math.sin(victoryAnimTimer * 0.12) * 15;
+        let nextLevelSize = Math.floor(completedSize * 0.55);
+        entCtx.font = `bold ${nextLevelSize}px Arial, sans-serif`;
+        entCtx.fillStyle = '#ffd700';
+        entCtx.fillText("", entityCanvas.width / 2, entityCanvas.height * 0.50);
+        
+        // 💫 Stelle rotanti
+        let starRotation = victoryAnimTimer * 0.05;
+        let starX = entityCanvas.width / 2 - nextLevelSize * 3.2;
+        let starY = entityCanvas.height * 0.50;
+        drawRotatingStar(starX, starY, 15, starRotation, '#ffd700');
+        
+        starX = entityCanvas.width / 2 + nextLevelSize * 3.2;
+        drawRotatingStar(starX, starY, 15, -starRotation, '#ffd700');
+        
+        // 💬 Sottotitolo
         entCtx.shadowBlur = 10;
-        entCtx.font = `bold ${fontSize * 0.35}px Arial, sans-serif`; // Leggermente più grande per leggibilità
-        entCtx.fillStyle = '#ffff00';
-        entCtx.fillText("Premi freccia per continuare", entityCanvas.width / 2, textYPosition + fontSize * 0.7);
+        entCtx.font = `bold ${completedSize * 0.25}px Arial, sans-serif`;
+        entCtx.fillStyle = '#ffffff';
+        entCtx.fillText("Premi freccia per continuare", entityCanvas.width / 2, entityCanvas.height * 0.72);
     }
     
+    entCtx.restore();
+}
+
+// ⭐ Helper function per disegnare stella rotante
+function drawRotatingStar(x, y, size, rotation, color) {
+    entCtx.save();
+    entCtx.translate(x, y);
+    entCtx.rotate(rotation);
+    entCtx.fillStyle = color;
+    entCtx.shadowColor = color;
+    entCtx.shadowBlur = 15;
+    
+    entCtx.beginPath();
+    for(let i = 0; i < 10; i++) {
+        let angle = (Math.PI * 2 * i) / 10;
+        let radius = (i % 2 === 0) ? size : size * 0.4;
+        let px = Math.cos(angle) * radius;
+        let py = Math.sin(angle) * radius;
+        if(i === 0) entCtx.moveTo(px, py);
+        else entCtx.lineTo(px, py);
+    }
+    entCtx.closePath();
+    entCtx.fill();
     entCtx.restore();
 }
 
