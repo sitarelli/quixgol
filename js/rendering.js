@@ -302,20 +302,22 @@ function draw() {
             entCtx.restore();
         }
 
-        // ⚽ PALLA PLAYER - SEMPRE VISIBILE
+     
+
+// ⚽ PALLA PLAYER - VERSIONE "HIGH PERFORMANCE" (NO GLOW)
         if (isDying) playerAnimScale = Math.max(0, playerAnimScale - 0.1); 
         else playerAnimScale = Math.min(1, playerAnimScale + 0.05); 
         
         if(playerAnimScale > 0.01) {
-            // ✨ TRAIL LUMINOSO quando vai veloce
+            
+            // 1. SCIA VELOCE (Semplificata: niente ombre, solo opacità)
             if(!isDying && playerSpeedMult > 2.5 && (player.dir.x !== 0 || player.dir.y !== 0)) {
                 entCtx.save();
                 entCtx.globalAlpha = 0.3;
-                entCtx.shadowColor = currentSkin.trail;
-                entCtx.shadowBlur = 0;
                 entCtx.fillStyle = currentSkin.trail;
+                entCtx.shadowBlur = 0; // FORZA ZERO OMBRE
                 entCtx.beginPath();
-                entCtx.arc((player.x + 0.5) * scaleX, (player.y + 0.5) * scaleY, scaleX * 3, 0, Math.PI * 2);
+                entCtx.arc((player.x + 0.5) * scaleX, (player.y + 0.5) * scaleY, scaleX * 2.0, 0, Math.PI * 2);
                 entCtx.fill();
                 entCtx.restore();
             }
@@ -323,43 +325,78 @@ function draw() {
             entCtx.save(); 
             entCtx.translate((player.x + 0.5) * scaleX, (player.y + 0.5) * scaleY);
             entCtx.scale(playerAnimScale, playerAnimScale);
+            
+            // Rotazione (manteniamo solo questa perché costa poco)
             if (!isDying && (player.dir.x !== 0 || player.dir.y !== 0)) playerAngle += (Math.random() - 0.5) * 1.5; 
             entCtx.rotate(playerAngle);
             
-            const blinkPhase = Math.sin((Date.now() / 500) * Math.PI); 
-            const glowBlur = 2 + 3 * Math.abs(blinkPhase); 
-            entCtx.shadowColor = currentSkin.trail; 
-            entCtx.shadowBlur = glowBlur;
+            // 2. DISABILITA EFFETTI PESANTI
+            entCtx.shadowBlur = 0;   // FONDAMENTALE PER SAFARI
+            entCtx.shadowColor = 'transparent';
             
-            const outerGrad = entCtx.createRadialGradient(0, 0, 0, 0, 0, scaleX * 2.5);
-            outerGrad.addColorStop(0, currentSkin.primary); 
-            outerGrad.addColorStop(0.5, currentSkin.secondary); 
-            outerGrad.addColorStop(1, 'rgba(0,0,0,0)');
-            entCtx.fillStyle = outerGrad; 
+            // 3. DISEGNA CERCHIO ESTERNO (Colore solido invece del gradiente)
+            entCtx.fillStyle = currentSkin.primary; 
             entCtx.beginPath(); 
-            entCtx.arc(0, 0, scaleX * 2.5, 0, Math.PI * 2); 
+            entCtx.arc(0, 0, scaleX * 1.8, 0, Math.PI * 2); // Raggio leggermente ridotto per nitidezza
             entCtx.fill();
             
-            const innerGrad = entCtx.createRadialGradient(0, 0, 0, 0, 0, scaleX * 1.2);
-            innerGrad.addColorStop(0, '#ffffff'); 
-            innerGrad.addColorStop(0.6, currentSkin.primary); 
-            innerGrad.addColorStop(1, currentSkin.secondary);
-            entCtx.fillStyle = innerGrad; 
+            // 4. DISEGNA CERCHIO INTERNO (Bianco solido)
+            entCtx.fillStyle = '#ffffff'; 
             entCtx.beginPath(); 
-            entCtx.arc(0, 0, scaleX * 1.2, 0, Math.PI * 2); 
+            entCtx.arc(0, 0, scaleX * 1.0, 0, Math.PI * 2); 
             entCtx.fill();
             
-            // ⚽ ICONA PALLONE PLAYER
-            entCtx.shadowBlur = 5;
-            entCtx.font = `${Math.min(scaleX, scaleY) * 5}px sans-serif`;
+            // 5. ICONA PALLONE
+            entCtx.shadowBlur = 0; // Assicuriamoci che anche il testo non abbia ombre
+            entCtx.font = `${Math.min(scaleX, scaleY) * 3}px sans-serif`;
             entCtx.textAlign = 'center';
             entCtx.textBaseline = 'middle';
-            entCtx.fillText('⚽', 0, 0);
+            entCtx.fillText('⚽', 0, 1); // Leggero offset verticale per centratura visiva
             
             entCtx.restore();
         }
-    }
+// ⚽ PALLA PLAYER - VERSIONE "HIGH PERFORMANCE" (NO GLOW)
+        if (isDying) playerAnimScale = Math.max(0, playerAnimScale - 0.1); 
+        else playerAnimScale = Math.min(1, playerAnimScale + 0.05); 
+        
+        if(playerAnimScale > 0.01) {
+            
+            // 1. SCIA VELOCE (Semplificata: niente ombre, solo opacità)
+            if(!isDying && playerSpeedMult > 2.5 && (player.dir.x !== 0 || player.dir.y !== 0)) {
+                entCtx.save();
+                entCtx.globalAlpha = 0.3;
+                entCtx.fillStyle = currentSkin.trail;
+                entCtx.shadowBlur = 0; // FORZA ZERO OMBRE
+                entCtx.beginPath();
+                entCtx.arc((player.x + 0.5) * scaleX, (player.y + 0.5) * scaleY, scaleX * 2.0, 0, Math.PI * 2);
+                entCtx.fill();
+                entCtx.restore();
+            }
+            
+            entCtx.save(); 
+            entCtx.translate((player.x + 0.8) * scaleX, (player.y + 0.8) * scaleY);
+            entCtx.scale(playerAnimScale, playerAnimScale);
+            
+            // Rotazione (manteniamo solo questa perché costa poco)
+            if (!isDying && (player.dir.x !== 0 || player.dir.y !== 0)) playerAngle += (Math.random() - 0.5) * 1.5; 
+            entCtx.rotate(playerAngle);
+            
+            // 2. DISABILITA EFFETTI PESANTI
+            entCtx.shadowBlur = 0;   // FONDAMENTALE PER SAFARI
+            entCtx.shadowColor = 'transparent';
+            
 
+            
+            // 5. ICONA PALLONE
+            entCtx.shadowBlur = 0; // Assicuriamoci che anche il testo non abbia ombre
+            entCtx.font = `${Math.min(scaleX, scaleY) * 5}px sans-serif`;
+            entCtx.textAlign = 'center';
+            entCtx.textBaseline = 'middle';
+            entCtx.fillText('⚽', 0, 1); // Leggero offset verticale per centratura visiva
+            
+            entCtx.restore();
+        }
+}
     // 💬 TESTI FLUTTUANTI
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
         let ft = floatingTexts[i];
