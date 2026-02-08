@@ -5,22 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>QIXGOL</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- ===== CSS MODULARI - ORDINE IMPORTANTE ===== -->
+    <!-- 1. Variabili e stili base -->
+    <link rel="stylesheet" href="css/variables.css">
+    
+    <!-- 2. Utilities e loading screen -->
+    <link rel="stylesheet" href="css/utilities.css">
+    
+    <!-- 3. Layout principale -->
+    <link rel="stylesheet" href="css/layout.css">
+    
+    <!-- 4. HUD (interfaccia utente) -->
+    <link rel="stylesheet" href="css/hud.css">
+    
+    <!-- 5. Area di gioco e canvas -->
+    <link rel="stylesheet" href="css/game-area.css">
+    
+    <!-- 6. Controlli mobile -->
+    <link rel="stylesheet" href="css/controls.css">
+    
+    <!-- 7. Schermata Game Over -->
+    <link rel="stylesheet" href="css/game-over.css">
+    
+    <!-- 8. Responsive (ULTIMO - sovrascrive tutto) -->
+    <link rel="stylesheet" href="css/responsive.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="icon" type="image/png" href="favicon.png">
 
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sitarelli.github.io/qixgol/">
+    <meta property="og:title" content="QIXGOL - Arcade Revival">
+    <meta property="og:description" content="Riconquista il territorio in questo revival arcade mozzafiato!">
+    <meta property="og:image" content="https://sitarelli.github.io/qixgol/socialpreview.jpg">
 
-
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://sitarelli.github.io/qixgol/">
-<meta property="og:title" content="QIXGOL - Arcade Revival">
-<meta property="og:description" content="Riconquista il territorio in questo revival arcade mozzafiato!">
-<meta property="og:image" content="https://sitarelli.github.io/qixgol/socialpreview.jpg">
-
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="QIXGOL - Arcade Revival">
-<meta name="twitter:description" content="Riconquista il territorio in questo revival arcade mozzafiato!">
-<meta name="twitter:image" content="https://sitarelli.github.io/qixgol/socialpreview.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="QIXGOL - Arcade Revival">
+    <meta name="twitter:description" content="Riconquista il territorio in questo revival arcade mozzafiato!">
+    <meta name="twitter:image" content="https://sitarelli.github.io/qixgol/socialpreview.jpg">
 
 </head>
 <body>
@@ -75,44 +98,35 @@
             </div>
         </div>
 
+        <div id="bottom-hud" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; width: 100%; gap: 15px; margin-top: 0px; padding: 0px 10px; box-sizing: border-box;">
+            
+            <div class="hud-column" style="display: flex; flex-direction: column; align-items: center; min-width: 60px; margin-top: 5px;">
+                <div class="label-mini">AREA</div>
+                <div class="value-big" id="ui-percent">0%</div>
+            </div>
 
-<div id="bottom-hud" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-start; width: 100%; gap: 15px; margin-top: 0px; padding: 0px 10px; box-sizing: border-box;">
-    
-    <div class="hud-column" style="display: flex; flex-direction: column; align-items: center; min-width: 60px; margin-top: 5px;">
-        <div class="label-mini">AREA</div>
-        <div class="value-big" id="ui-percent">0%</div>
+            <div class="hud-column" style="display: flex; flex-direction: column; align-items: center;">
+                <div id="joystick-container">
+                    <div id="joystick-base">
+                        <div id="joystick-stick"></div>
+                    </div>
+                </div>        
+            </div>
+
+            <div class="hud-column" style="display: flex; flex-direction: column; align-items: center; min-width: 60px; margin-top: 1px;">
+                <button id="music-btn" class="side-btn" style="margin-top: 1px; margin-left: 100px; margin-right: 100px;">🎵</button>
+            </div>
+
+            <div class="hud-column" style="display: flex; flex-direction: column; align-items: center; min-width: 60px; margin-top: 5px;">
+                <div class="label-mini">SCORE</div>
+                <div class="value-big" id="ui-score">0</div>
+            </div>
+
+        </div>
     </div>
 
-    <div class="hud-column" style="display: flex; flex-direction: column; align-items: center;">
-
-<div id="joystick-container">
-    <div id="joystick-base">
-        <div id="joystick-stick"></div>
-    </div>
-</div>        
-
-    </div>
-
- <div class="hud-column" style="display: flex; flex-direction: column; align-items: center; min-width: 60px; margin-top: 1px;">
- 
-
-        <button id="music-btn" class="side-btn" style="margin-top: 1px; margin-left: 100px; margin-right: 100px;">🎵</button>
-    </div>
-
-    <div class="hud-column" style="display: flex; flex-direction: column; align-items: center; min-width: 60px; margin-top: 5px;">
-        <div class="label-mini">SCORE</div>
-        <div class="value-big" id="ui-score">0</div>
-        
-    </div>
-
-
-
-
-
-</div>
-
-    <audio id="bg-music" loop><source src="soundtrack.mp3" type="audio/mp3"></audio>
-    <audio id="gameover-sound"><source src="gameover.mp3" type="audio/mp3"></audio>
+    <audio id="bg-music" loop><source src="mp3/soundtrack.mp3" type="audio/mp3"></audio>
+    <audio id="gameover-sound"><source src="mp3/gameover.mp3" type="audio/mp3"></audio>
 
     <script>
         function enterFullscreenAndStart() {
@@ -122,19 +136,16 @@
         }
     </script>
 
-
-<!-- <script src="script.js"></script> -->
-
-<script src="config.js"></script>
-<script src="dom-elements.js"></script>
-<script src="game-state.js"></script>
-<script src="audio.js"></script>
-<script src="rendering.js"></script>
-<script src="game-logic.js"></script>
-<script src="ui-controls.js"></script>
-<script src="init.js"></script>
-<script src="input-handlers.js"></script>
+    <!-- JavaScript modulari -->
+    <script src="js/config.js"></script>
+    <script src="js/dom-elements.js"></script>
+    <script src="js/game-state.js"></script>
+    <script src="js/audio.js"></script>
+    <script src="js/rendering.js"></script>
+    <script src="js/game-logic.js"></script>
+    <script src="js/ui-controls.js"></script>
+    <script src="js/init.js"></script>
+    <script src="js/input-handlers.js"></script>
 
 </body>
-
 </html>
