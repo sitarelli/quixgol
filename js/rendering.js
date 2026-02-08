@@ -293,7 +293,7 @@ function draw() {
             ep.angle += 0.1; 
             entCtx.rotate(ep.angle);
             entCtx.shadowColor = ep.type === 'soccer' ? '#00ff00' : '#ff6600'; 
-            entCtx.shadowBlur = 10; 
+            entCtx.shadowBlur = 0; 
             entCtx.font = `${Math.min(scaleX, scaleY) * 5.5}px sans-serif`; 
             entCtx.textAlign = 'center'; 
             entCtx.textBaseline = 'middle';
@@ -312,7 +312,7 @@ function draw() {
                 entCtx.save();
                 entCtx.globalAlpha = 0.3;
                 entCtx.shadowColor = currentSkin.trail;
-                entCtx.shadowBlur = 20;
+                entCtx.shadowBlur = 0;
                 entCtx.fillStyle = currentSkin.trail;
                 entCtx.beginPath();
                 entCtx.arc((player.x + 0.5) * scaleX, (player.y + 0.5) * scaleY, scaleX * 3, 0, Math.PI * 2);
@@ -327,7 +327,7 @@ function draw() {
             entCtx.rotate(playerAngle);
             
             const blinkPhase = Math.sin((Date.now() / 500) * Math.PI); 
-            const glowBlur = 10 + 10 * Math.abs(blinkPhase); 
+            const glowBlur = 2 + 3 * Math.abs(blinkPhase); 
             entCtx.shadowColor = currentSkin.trail; 
             entCtx.shadowBlur = glowBlur;
             
