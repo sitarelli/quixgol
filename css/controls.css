@@ -1,0 +1,85 @@
+/* ============================================
+   CONTROLS.CSS
+   Gestisce i controlli touch per dispositivi mobili:
+   - Joystick virtuale (cerchio con stick mobile)
+   - D-Pad (croce direzionale) - probabilmente non più usato
+   - Ottimizzato per touch e visibilità su schermi piccoli
+   ============================================ */
+
+/* --- JOYSTICK VIRTUALE --- */
+/* Container esterno del joystick
+   Include sfondo scuro per contrasto */
+#joystick-container {
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;              /* FONDAMENTALE: non sparisce se manca spazio */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: none;          /* Disabilita gesture native del browser */
+    z-index: 9999;               /* Sempre in primo piano */
+    margin: 5px 0;
+    background: rgba(0, 0, 0, 0.3);  /* Sfondo scuro per contrasto */
+    border-radius: 50%;          /* Forma circolare */
+}
+
+/* Base del joystick (cerchio esterno) */
+#joystick-base {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.1);  /* Sfondo semi-trasparente */
+    border: 2px solid var(--primary);       /* Bordo neon */
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 0 10px var(--primary);    /* Effetto glow */
+}
+
+/* Stick mobile del joystick (pallino che si muove) */
+#joystick-stick {
+    width: 30px;
+    height: 30px;
+    background: var(--danger);              /* ROSSO per massima visibilità */
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--danger);
+    position: absolute;
+    pointer-events: none;                    /* Non intercetta i touch */
+    transition: transform 0.05s linear;      /* Movimento fluido ma reattivo */
+}
+
+/* --- NASCONDERE CONTROLLI SU DESKTOP --- */
+/* Il joystick virtuale non viene mostrato su desktop */
+#joystick-container {
+    display: none !important;
+}
+
+/* --- D-PAD (CROCE DIREZIONALE) --- */
+/* Sistema alternativo al joystick, probabilmente deprecato
+   ma mantenuto per compatibilità */
+
+/* Container delle righe del D-Pad */
+.dpad-row { 
+    display: flex; 
+    gap: 5px; 
+}
+
+/* Singolo pulsante direzionale */
+.dpad-btn {
+    width: 75px; 
+    height: 75px;
+    background: rgba(0, 20, 40, 0.9);      /* Sfondo blu scuro */
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    font-size: 30px;                        /* Icona freccia grande */
+    border-radius: 10px;
+    cursor: pointer;
+    touch-action: manipulation;             /* Ottimizza la risposta al touch */
+}
+
+/* Stato premuto */
+.dpad-btn:active { 
+    background: var(--primary);             /* Inverte i colori */
+    color: #000; 
+}

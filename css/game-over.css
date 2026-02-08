@@ -1,0 +1,196 @@
+/* ============================================
+   GAME-OVER.CSS
+   Gestisce la schermata finale che appare quando perdi:
+   - Overlay centrale con sfondo scuro
+   - Titolo "GAME OVER" / "VITTORIA"
+   - Punteggio finale
+   - Input per il nome giocatore
+   - Classifica (leaderboard) dei migliori 10
+   - Pulsanti Salva e Riprova
+   ============================================ */
+
+/* --- OVERLAY PRINCIPALE --- */
+/* Schermata che copre l'area di gioco quando finisce la partita */
+#game-over-screen {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);  /* Nero quasi opaco */
+    
+    /* Layout centrato verticalmente */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 20px;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 1000;                     /* Sopra tutto il resto */
+    overflow-y: auto;                   /* Scroll se il contenuto è troppo */
+}
+
+/* --- TITOLO FINALE --- */
+/* "GAME OVER" o "VITTORIA" 
+   Con effetto glow del colore corrente */
+#end-title {
+    font-size: 1.5em;
+    margin: 0 0 5px 0;
+    text-shadow: 0 0 10px currentColor;  /* Bagliore del colore del testo */
+}
+
+/* --- TESTO PUNTEGGIO --- */
+/* Label "Punteggio: " */
+.final-score-text {
+    font-size: 1em;
+    margin-bottom: 8px;
+}
+
+/* --- VALORE PUNTEGGIO FINALE --- */
+/* Il numero del punteggio, in evidenza con colore neon */
+#final-score-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1.3em;
+    color: var(--primary);
+}
+
+/* Elemento obsoleto (non più usato) */
+#final-score {
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+/* --- INPUT NOME GIOCATORE --- */
+/* Sezione che contiene input + pulsante salva */
+#input-section {
+    margin: 15px 0;
+    display: flex;
+    gap: 10px;
+    transform: scale(1.2);  /* Ingrandisce leggermente per visibilità */
+}
+
+/* Campo di testo per il nome */
+#player-name {
+    padding: 10px;
+    font-size: 16px;
+    width: 60%;
+    text-transform: uppercase;          /* Forza maiuscole (stile arcade) */
+    background: #222;
+    color: #00f3ff;
+    border: 1px solid #00f3ff;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    font-family: 'Orbitron', sans-serif;
+    text-align: center;
+}
+
+/* --- PULSANTI --- */
+/* Stile comune per pulsanti Salva e Riprova */
+#btn-save, 
+#btn-retry {
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    background-color: #00f3ff;
+    color: black;
+    border: none;
+    font-weight: bold;
+    margin-top: 8px;
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    border-radius: 5px;
+}
+
+/* Stato disabilitato (durante il salvataggio) */
+#btn-save:disabled {
+    background-color: #555;
+    cursor: wait;
+}
+
+/* --- CONTAINER LEADERBOARD --- */
+/* Area che contiene la classifica dei migliori 10 giocatori */
+#leaderboard-container {
+    margin-top: 5px;
+    text-align: left;
+    flex-grow: 1;                       /* Occupa lo spazio disponibile */
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid #333;
+    padding-top: 5px;
+    font-size: 0.85em;
+    overflow: visible;                   /* Su desktop: no scroll, mostra tutto */
+    min-height: 0;
+    width: 95%;
+    max-width: 600px;
+}
+
+/* Titolo della leaderboard */
+#leaderboard-container h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 5px;
+    font-size: 1em;
+    color: #ff0055;                      /* Colore danger */
+}
+
+/* --- LISTA CLASSIFICA --- */
+/* Lista dei 10 migliori punteggi */
+#leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 3px;                            /* Spazio tra le righe */
+    overflow: visible;                   /* Su desktop mostra tutto senza scroll */
+    max-height: none;
+    overflow-y: visible;
+    overflow-x: hidden;
+    padding-right: 5px;
+    width: 100%;
+}
+
+/* --- SINGOLA RIGA DELLA CLASSIFICA --- */
+/* Ogni riga mostra: nome giocatore | punteggio */
+#leaderboard-list li {
+    display: flex;
+    justify-content: space-between;      /* Nome a sinistra, punteggio a destra */
+    padding: 4px 10px;
+    margin: 0;
+    border-bottom: 1px dotted #333;
+    font-size: 0.95em;
+    line-height: 1.3;
+    background: rgba(0, 243, 255, 0.03); /* Sfondo leggerissimo */
+    border-radius: 3px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Versione alternativa con più stile (probabilmente per mobile) */
+#leaderboard-list li {
+    font-size: 1.4rem;
+    margin: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    padding: 5px 10px;
+    background: rgba(0, 243, 255, 0.05);
+}
+
+/* Nome giocatore (a sinistra) */
+#leaderboard-list li span:first-child {
+    color: #00ffff;
+    flex: 1;
+    padding-right: 10px;                 /* Spazio tra nome e punteggio */
+}
+
+/* Punteggio (a destra) */
+#leaderboard-list li span:last-child {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--primary);
+    font-weight: bold;
+    min-width: 90px;                     /* Spazio fisso per allineamento */
+    text-align: right;
+}

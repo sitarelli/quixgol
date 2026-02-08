@@ -1,0 +1,49 @@
+/* ============================================
+   VARIABLES.CSS
+   Contiene le variabili CSS globali e gli stili 
+   di base del body (colori, sfondo, font)
+   ============================================ */
+
+/* --- VARIABILI COLORE DEL TEMA --- */
+/* Definiscono la palette principale del gioco */
+:root {
+    --primary: #00f3ff;    /* Colore primario - ciano neon */
+    --danger: #ff0055;     /* Colore pericolo - rosso neon */
+    --bg: #050510;         /* Colore sfondo principale - nero profondo */
+}
+
+/* --- STILI BASE DEL BODY --- */
+/* Configura l'aspetto generale della pagina: 
+   - Sfondo con pattern ripetuto
+   - Layout flex centrato
+   - Impedisce lo scroll e la selezione del testo
+   - Ottimizzato per mobile (touch-action: none)
+*/
+body {
+    /* Colore di fallback se l'immagine non carica */
+    background-color: var(--bg);
+    
+    /* Pattern di sfondo che si ripete */
+    background-image: url('pattern.png'); 
+    background-repeat: repeat; 
+    background-attachment: fixed;  /* Sfondo fisso mentre il contenuto scrolla */
+    background-size: 150px;        /* Dimensione delle tile del pattern */
+
+    /* Tipografia e colori di base */
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    
+    /* Layout fullscreen centrato */
+    margin: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    /* Previene comportamenti indesiderati su mobile */
+    overflow: hidden;           /* Nasconde lo scroll */
+    touch-action: none;         /* Disabilita gesture native del browser */
+    user-select: none;          /* Impedisce la selezione del testo */
+}

@@ -1,0 +1,223 @@
+/* ============================================
+   RESPONSIVE.CSS
+   Contiene tutte le media queries per adattare
+   l'interfaccia a schermi piccoli (tablet e mobile).
+   Breakpoint principale: 768px
+   ============================================ */
+
+/* ========================================
+   MEDIA QUERY: Tablet e Mobile (max-width: 768px)
+   ======================================== */
+@media (max-width: 768px) {
+    
+    /* --- LAYOUT GENERALE --- */
+    /* Sblocca la pagina per permettere lo scroll verticale
+       e previene la sovrapposizione degli elementi */
+    
+    body {
+        height: auto !important;           /* Permette alla pagina di allungarsi */
+        min-height: 100vh;
+        overflow-y: auto !important;       /* Abilita lo scroll verticale */
+        display: block !important;         /* Disabilita il flex centrale */
+        padding-top: 10px;
+        padding-bottom: 50px;              /* Spazio in fondo per scrollare */
+    }
+
+    #main-layout {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;       /* Allinea tutto in alto */
+        height: auto;
+        width: 100%;
+    }
+
+    /* --- HEADER --- */
+    #header-row {
+        gap: 10px;
+        padding: 0 10px;
+        margin-bottom: 5px;
+        flex-shrink: 0;
+        box-sizing: border-box;
+    }
+    
+    #game-logo {
+        max-height: 200px; 
+    }
+
+    /* --- AREA DI GIOCO --- */
+    /* Ridimensionamento del quadrato di gioco per mobile */
+    #game-wrapper {
+        width: 90vw;                       /* 90% della larghezza schermo */
+        height: 90vw;                      /* Mantiene proporzione quadrata */
+        max-height: 65vh;                  /* Non supera il 65% dell'altezza */
+        max-width: 65vh;
+        margin: 0px auto 30px auto !important;  /* 30px sotto per separare dai controlli */
+        flex-shrink: 0;
+        order: 1;
+    }
+
+    /* Versione alternativa del dimensionamento (probabilmente ridondante) */
+    #game-wrapper {
+        order: 1;
+        width: 85vw;
+        height: 85vw; 
+        max-width: 400px; 
+        max-height: 400px;
+        max-height: 50vh;                  /* Non più di metà schermo */
+    }
+
+    /* --- LAYOUT GAME ROW --- */
+    #game-row {
+        flex-wrap: wrap; 
+        width: 100%;
+        justify-content: center;
+        padding: 0;
+        gap: 0;
+    }
+
+    /* --- COLONNE LATERALI (deprecate) --- */
+    .side-col {
+        width: 50%;                        /* Si dividono la riga sotto il gioco */
+        height: auto;
+        flex-direction: column;
+        margin-bottom: 5px;
+        align-items: center !important;
+    }
+
+    .side-col.left-col { 
+        order: 2; 
+    }
+    
+    /* NASCONDE indicatore 'AREA' su mobile per risparmiare spazio */
+    .side-col.left-col .hud-vertical:nth-of-type(2),
+    .side-col.left-col div[style*="height"] { 
+        display: none; 
+    }
+
+    .side-col.right-col { 
+        order: 3; 
+    }
+
+    /* --- HUD INFERIORE --- */
+    /* Riorganizza il layout da orizzontale a verticale */
+    #bottom-hud {
+        display: flex !important;
+        flex-direction: column !important;  /* Elementi uno sotto l'altro */
+        align-items: center !important;
+        justify-content: flex-start !important;
+        width: 100% !important;
+        height: auto !important;
+        margin-top: 0 !important;
+        gap: 20px !important;               /* Spaziatura tra i blocchi */
+        order: 2;
+    }
+
+    .hud-column {
+        width: 100%;
+        display: flex !important;
+        justify-content: center;
+        margin: 0 !important;
+    }
+
+    /* --- JOYSTICK VIRTUALE (solo su mobile) --- */
+    #joystick-container {
+        display: flex !important;        /* Mostra il joystick su mobile */
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+        justify-content: center;
+        align-items: center;
+        touch-action: none;
+        z-index: 9999;
+        margin: 5px 0;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 50%;
+    }
+
+    /* Riduce dimensione font su mobile */
+    .value-big { 
+        font-size: 24px; 
+    }
+
+    /* --- PULSANTE NEXT LEVEL --- */
+    #next-level-btn {
+        font-size: 14px; 
+        padding: 10px 20px; 
+        white-space: nowrap;               /* Testo su una sola riga */
+        width: auto;
+        min-width: 120px;
+    }
+
+    /* --- GAME OVER SCREEN --- */
+    #game-over-screen {
+        width: 90vw;
+        height: 85vw;
+        max-width: 400px;
+        max-height: 400px;
+        padding: 15px;
+    }
+
+    /* --- LEADERBOARD --- */
+    #leaderboard-container {
+        width: 100%;
+        max-width: 100%;
+        overflow: auto;                    /* RIATTIVATO: scroll su mobile */
+    }
+
+    #leaderboard-list {
+        font-size: 0.9rem;
+        max-height: 200px;                 /* Limita altezza per scroll */
+        overflow-y: auto;                  /* Scroll verticale */
+    }
+
+    #leaderboard-list li {
+        padding: 6px 8px;
+    }
+
+    #leaderboard-list li span:first-child {
+        font-size: 0.85rem;
+        max-width: 150px;                  /* Limita larghezza nome */
+        overflow: hidden;
+        text-overflow: ellipsis;           /* "..." se troppo lungo */
+        white-space: nowrap;
+    }
+
+    #leaderboard-list li span:last-child {
+        font-size: 0.9rem;
+        min-width: 60px;
+    }
+}
+
+/* ========================================
+   SCROLLBAR PERSONALIZZATA (Webkit)
+   Per dare uno stile arcade alla scrollbar
+   ======================================== */
+
+/* Applica lo stile a tutti gli elementi scrollabili dentro game-over */
+#game-over-screen *::-webkit-scrollbar {
+    width: 8px !important;
+    display: block !important;
+}
+
+#game-over-screen *::-webkit-scrollbar-track {
+    background: #050510 !important;        /* Sfondo nero profondo */
+    border-radius: 10px;
+}
+
+#game-over-screen *::-webkit-scrollbar-thumb {
+    background: #222 !important;           /* Grigio molto scuro */
+    border: 1px solid var(--primary) !important;  /* Bordino neon */
+    border-radius: 10px;
+}
+
+#game-over-screen *::-webkit-scrollbar-thumb:hover {
+    background: var(--primary) !important; /* Diventa neon al passaggio */
+}
+
+/* Scrollbar per Firefox */
+#leaderboard-container, 
+#leaderboard-list {
+    scrollbar-width: thin;
+    scrollbar-color: #222 #050510;
+}

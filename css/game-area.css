@@ -1,0 +1,116 @@
+/* ============================================
+   GAME-AREA.CSS
+   Gestisce l'area di gioco quadrata e i canvas sovrapposti:
+   - Container del gioco (#game-wrapper)
+   - Layer della camera con trasformazioni zoom/pan
+   - Canvas multipli per immagini, griglia ed entità
+   - Pulsante "Next Level"
+   ============================================ */
+
+/* --- AREA DI GIOCO QUADRATA --- */
+/* Il cuore del gioco: un quadrato perfetto che contiene tutto il gameplay
+   Utilizza vmin per garantire che stia sempre dentro lo schermo
+   sia in portrait che in landscape */
+#game-wrapper {
+    position: relative;
+    
+    /* DIMENSIONAMENTO RESPONSIVE */
+    /* vmin = 1% del lato PIÙ CORTO dello schermo
+       Garantisce che il quadrato sia sempre visibile */
+    width: 85vmin; 
+    height: 85vmin;
+    
+    /* Limiti massimi per schermi desktop grandi */
+    max-width: 550px;
+    max-height: 550px;
+    
+    /* IMPORTANTE: Impedisce a Flexbox di schiacciare il quadrato */
+    flex-shrink: 0; 
+    
+    /* Stile visivo arcade */
+    border: 2px solid var(--primary);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);  /* Glow esterno */
+    background: #000;
+    overflow: hidden;                                /* Nasconde tutto ciò che esce */
+    margin: 5px auto 10px auto; 
+}
+
+/* --- CAMERA LAYER --- */
+/* Layer che contiene tutti i canvas e può essere trasformato
+   per implementare zoom e pan (spostamento della visuale)
+   Questo permette di muovere la "camera" senza ricalcolare
+   tutti i disegni sui canvas */
+#camera-layer {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    /* Lo zoom parte dall'angolo in alto a sinistra
+       Questo semplifica i calcoli matematici */
+    transform-origin: 0 0;
+    
+    /* Hint al browser per ottimizzare le trasformazioni */
+    will-change: transform;
+}
+
+/* --- CANVAS SOVRAPPOSTI --- */
+/* Ci sono 3 canvas impilati verticalmente tramite z-index:
+   1. imageCanvas: sfondo/immagine
+   2. gridCanvas: griglia e linee del giocatore
+   3. entityCanvas: nemici e oggetti in movimento */
+canvas {
+    position: absolute;
+    top: 0; 
+    left: 0;
+    width: 100%; 
+    height: 100%;
+    image-rendering: auto;  /* Rendering morbido (non pixelato) */
+    display: block;
+}
+
+/* Ordine di sovrapposizione */
+#imageCanvas { 
+    z-index: 1;     /* Sfondo */
+}
+
+#gridCanvas { 
+    z-index: 2;     /* Livello intermedio: griglia */
+}
+
+#entityCanvas { 
+    z-index: 3;     /* In primo piano: entità */
+}
+
+/* --- PULSANTE NEXT LEVEL --- */
+/* Appare al centro dello schermo quando completi un livello
+   Con animazione pulsante */
+#next-level-container {
+    position: absolute;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%);  /* Centra perfettamente */
+    display: none;                      /* Nascosto di default */
+    z-index: 100;                       /* Sopra tutto */
+}
+
+#next-level-btn {
+    background: var(--primary);
+    color: var(--bg);
+    border: 2px solid white;
+    padding: 15px 30px;
+    font-size: 15px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    border-radius: 50px;                /* Bordi molto arrotondati */
+    cursor: pointer;
+    box-shadow: 0 0 20px var(--primary); /* Glow intenso */
+    animation: pulseBtn 1s infinite alternate;  /* Pulsa continuamente */
+}
+
+/* Animazione di pulsazione */
+@keyframes pulseBtn { 
+    from { transform: scale(1); } 
+    to { transform: scale(1.1); } 
+}
