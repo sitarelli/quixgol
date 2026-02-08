@@ -68,3 +68,26 @@
     justify-content: center;
     flex-shrink: 0;             /* Non si riduce se manca spazio */
 }
+
+
+/* --- FOCUS MODE --- */
+/* Quando il body ha questa classe, il gioco domina lo schermo */
+
+body.focus-active #header-row {
+    display: none !important; /* Nasconde logo, livello e vite in alto */
+}
+
+body.focus-active #game-wrapper {
+    
+    
+    /* Rimuove limiti massimi precedenti */
+    max-width: none !important;
+    max-height: none !important;
+    
+    margin: auto; /* Centra tutto */
+}
+
+/* Opzionale: se hai un footer o scritte sotto, nascondi anche quelle */
+body.focus-active .footer-info {
+    display: none;
+}
